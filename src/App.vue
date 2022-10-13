@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <HeaderBox />
+    <HeaderBox :numCorrect="numCorrect" :numTotal="numTotal" />
 
     <b-container class="bv-example-row">
       <b-row>
@@ -9,6 +9,8 @@
             v-if="questions.length"
             :currentQuestion="questions[index]"
             :next="next"
+            :increment="increment"
+            :isQuizEnded="isQuizEnded"
           />
         </b-col>
       </b-row>
@@ -30,15 +32,29 @@ export default {
     return {
       questions: [],
       index: 0,
+      numCorrect: 0,
+      numTotal: 0,
+      isQuizEnded: false,
     };
   },
   methods: {
     next() {
       this.index++;
+
+      if (this.index === this.questions.length - 1) {
+        this.isQuizEnded = true;
+      }
+    },
+    increment(isCorrect) {
+      if (isCorrect) {
+        this.numCorrect++;
+      }
+
+      this.numTotal++;
     },
   },
   mounted() {
-    fetch('https://opentdb.com/api.php?amount=10&category=27&type=multiple', {
+    fetch('https://opentdb.com/api.php?amount=10&type=multiple', {
       method: 'get',
     })
       .then(response => {
